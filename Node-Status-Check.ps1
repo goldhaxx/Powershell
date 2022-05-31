@@ -1,19 +1,19 @@
-$computers = "barracks","carrier","bubbglegum"
+$computers = "barracks","bubblegum","carrier"
 $global:counter = 0
 
 Foreach($c in $computers) {
-IF (Test-Connection -BufferSize 32 -Count 1 -ComputerName $c -Quiet) {
+IF (Test-Connection -BufferSize 32 -Count 2 -ComputerName $c -Quiet) {
         #Write-Host $global:counter
-        $dnsName = @()
-        $dnsName = $dnsName + ((Resolve-DnsName $computers[$global:counter] | Select-Object -ExpandProperty Name) + " | " + (Resolve-DnsName $computers[$global:counter] | Select-Object -ExpandProperty IPAddress))
         $global:counter = $global:counter + 1
+        $dnsName = @()
+        $dnsName = $dnsName + ((Resolve-DnsName -ErrorAction SilentlyContinue $computers[$global:counter] | Select-Object -ExpandProperty Name) + " | " + (Resolve-DnsName -ErrorAction SilentlyContinue $computers[$global:counter] | Select-Object -ExpandProperty IPAddress))
         Write-Host $dnsName "is online"
         Start-Sleep -Seconds 1
 } Else {
         # Start-Sleep -Seconds 600
         ## Script to send email if server is down.
 
-        $SmtpUser = 'zach@blocktech.solutions'
+        $SmtpUser = $env:SMTP_USER
         $smtpPassword = $env:SMTP_PASS
 
         # Get the credential
